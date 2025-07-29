@@ -17,7 +17,7 @@ async function run() {
 
     // Determine refs to compare
     let oldRef, newRef;
-    
+
     // Check if INPUT_OLD and INPUT_NEW env vars are set (for testing)
     if (process.env.INPUT_OLD && process.env.INPUT_NEW) {
       oldRef = process.env.INPUT_OLD;
@@ -34,12 +34,14 @@ async function run() {
       newRef = context.payload.after;
       core.info(`Comparing commits ${oldRef} with ${newRef}`);
     } else {
-      throw new Error('Unable to determine commits to compare. This action should be run on pull_request or push events.');
+      throw new Error(
+        'Unable to determine commits to compare. This action should be run on pull_request or push events.'
+      );
     }
 
     // Run apidiff
     const output = await runApidiff({ workingDirectory, oldRef, newRef });
-    
+
     // Parse output
     const parsedChanges = parseApidiffOutput(output);
 
@@ -62,7 +64,6 @@ async function run() {
     } else {
       core.info('No breaking API changes detected');
     }
-
   } catch (error) {
     core.setFailed(`Action failed: ${error.message}`);
   }

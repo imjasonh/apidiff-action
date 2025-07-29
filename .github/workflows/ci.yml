@@ -79,7 +79,7 @@ jobs:
           fi
           echo "Breaking changes detected: ${{ steps.test-breaking.outputs.breaking-count }}"
           echo "Compatible changes: ${{ steps.test-breaking.outputs.compatible-count }}"
-          
+
           # Verify counts match what we expect
           if [ "${{ steps.test-breaking.outputs.breaking-count }}" != "3" ]; then
             echo "Expected 3 breaking changes, got ${{ steps.test-breaking.outputs.breaking-count }}"
@@ -109,7 +109,7 @@ jobs:
             exit 1
           fi
           echo "Compatible changes: ${{ steps.test-safe.outputs.compatible-count }}"
-          
+
           # Verify count matches what we expect
           if [ "${{ steps.test-safe.outputs.compatible-count }}" != "3" ]; then
             echo "Expected 3 compatible changes, got ${{ steps.test-safe.outputs.compatible-count }}"

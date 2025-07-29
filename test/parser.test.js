@@ -86,7 +86,7 @@ describe('formatChangesAsMarkdown', () => {
       hasBreakingChanges: false,
       breakingCount: 0,
       compatibleCount: 0,
-      packages: []
+      packages: [],
     };
 
     const markdown = formatChangesAsMarkdown(parsedChanges);
@@ -98,11 +98,13 @@ describe('formatChangesAsMarkdown', () => {
       hasBreakingChanges: true,
       breakingCount: 1,
       compatibleCount: 0,
-      packages: [{
-        name: 'default',
-        breaking: [{ message: 'Foo: removed', compatible: false }],
-        compatible: []
-      }]
+      packages: [
+        {
+          name: 'default',
+          breaking: [{ message: 'Foo: removed', compatible: false }],
+          compatible: [],
+        },
+      ],
     };
 
     const markdown = formatChangesAsMarkdown(parsedChanges);
@@ -118,14 +120,16 @@ describe('formatChangesAsMarkdown', () => {
       hasBreakingChanges: false,
       breakingCount: 0,
       compatibleCount: 2,
-      packages: [{
-        name: 'default',
-        breaking: [],
-        compatible: [
-          { message: 'Bar: added', compatible: true },
-          { message: 'Baz: added', compatible: true }
-        ]
-      }]
+      packages: [
+        {
+          name: 'default',
+          breaking: [],
+          compatible: [
+            { message: 'Bar: added', compatible: true },
+            { message: 'Baz: added', compatible: true },
+          ],
+        },
+      ],
     };
 
     const markdown = formatChangesAsMarkdown(parsedChanges);
