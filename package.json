@@ -7,13 +7,13 @@
   },
   "description": "GitHub Action for detecting breaking API changes in Go code",
   "devDependencies": {
-    "@types/jest": "^29.5.11",
+    "@types/jest": "^30.0.0",
     "@vercel/ncc": "^0.38.1",
-    "eslint": "^8.56.0",
-    "eslint-config-prettier": "^9.1.0",
-    "husky": "^8.0.3",
-    "jest": "^29.7.0",
-    "lint-staged": "^15.2.0",
+    "eslint": "^9.32.0",
+    "eslint-config-prettier": "^10.1.8",
+    "husky": "^9.1.7",
+    "jest": "^30.0.5",
+    "lint-staged": "^16.1.2",
     "prettier": "^3.1.1"
   },
   "jest": {
