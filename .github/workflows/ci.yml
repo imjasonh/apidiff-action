@@ -2,9 +2,9 @@ name: CI
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
+    branches: [main]
 
 permissions:
   contents: read
@@ -12,83 +12,133 @@ permissions:
 jobs:
   test:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        go-version: ['1.21', '1.22', '1.23']
-
     steps:
-    - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-    - name: Set up Go
-      uses: actions/setup-go@v5
-      with:
-        go-version: ${{ matrix.go-version }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
 
-    - name: Go mod download
-      run: go mod download
+      - name: Install dependencies
+        run: npm ci
 
-    - name: Run tests
-      run: go test -v -race -coverprofile=coverage.txt -covermode=atomic ./...
+      - name: Run tests
+        run: npm test
 
-    - name: Upload coverage
-      if: matrix.go-version == '1.23'
-      uses: codecov/codecov-action@v4
-      with:
-        file: ./coverage.txt
+      - name: Lint
+        run: npm run lint
 
-  lint:
+      - name: Build
+        run: npm run build
+
+      - name: Check dist is up to date
+        run: |
+          if [ -n "$(git status --porcelain dist)" ]; then
+            echo "Generated dist files are out of date. Run 'npm run build' and commit the changes."
+            exit 1
+          fi
+
+  # Test the action itself
+  test-action:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-    - name: Set up Go
-      uses: actions/setup-go@v5
-      with:
-        go-version: '1.23'
+      - uses: actions/setup-go@v5
+        with:
+          go-version: 'stable'
 
-    - name: golangci-lint
-      uses: golangci/golangci-lint-action@v6
-      with:
-        version: latest
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
 
-  build:
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
-        go-version: ['1.23']
+      # Build the action
+      - name: Build action
+        run: |
+          npm ci
+          npm run build
 
-    steps:
-    - uses: actions/checkout@v4
+      # Test with breaking changes (should detect them)
+      - name: Test with breaking changes
+        uses: ./
+        id: test-breaking
+        with:
+          working-directory: testdata/break
+          fail-on-breaking: false
+          comment-on-pr: false
+        env:
+          INPUT_OLD: old
+          INPUT_NEW: new
 
-    - name: Set up Go
-      uses: actions/setup-go@v5
-      with:
-        go-version: ${{ matrix.go-version }}
+      - name: Verify breaking changes detected
+        run: |
+          if [ "${{ steps.test-breaking.outputs.has-breaking-changes }}" != "true" ]; then
+            echo "Expected breaking changes to be detected"
+            exit 1
+          fi
+          echo "Breaking changes detected: ${{ steps.test-breaking.outputs.breaking-count }}"
+          echo "Compatible changes: ${{ steps.test-breaking.outputs.compatible-count }}"
+          
+          # Verify counts match what we expect
+          if [ "${{ steps.test-breaking.outputs.breaking-count }}" != "3" ]; then
+            echo "Expected 3 breaking changes, got ${{ steps.test-breaking.outputs.breaking-count }}"
+            exit 1
+          fi
+          if [ "${{ steps.test-breaking.outputs.compatible-count }}" != "1" ]; then
+            echo "Expected 1 compatible change, got ${{ steps.test-breaking.outputs.compatible-count }}"
+            exit 1
+          fi
 
-    - name: Build
-      run: go build -v ./...
+      # Test with safe changes (should not detect breaking changes)
+      - name: Test with safe changes
+        uses: ./
+        id: test-safe
+        with:
+          working-directory: testdata/safe
+          fail-on-breaking: true
+          comment-on-pr: false
+        env:
+          INPUT_OLD: old
+          INPUT_NEW: new
 
-    - name: Test install
-      run: go install ./...
+      - name: Verify no breaking changes in safe test
+        run: |
+          if [ "${{ steps.test-safe.outputs.has-breaking-changes }}" != "false" ]; then
+            echo "Expected no breaking changes in safe test"
+            exit 1
+          fi
+          echo "Compatible changes: ${{ steps.test-safe.outputs.compatible-count }}"
+          
+          # Verify count matches what we expect
+          if [ "${{ steps.test-safe.outputs.compatible-count }}" != "3" ]; then
+            echo "Expected 3 compatible changes, got ${{ steps.test-safe.outputs.compatible-count }}"
+            exit 1
+          fi
 
-  pre-commit:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v4
+      # Test with clean changes (no API changes)
+      - name: Test with clean changes
+        uses: ./
+        id: test-clean
+        with:
+          working-directory: testdata/clean
+          fail-on-breaking: true
+          comment-on-pr: false
+        env:
+          INPUT_OLD: old
+          INPUT_NEW: new
 
-    - name: Set up Go
-      uses: actions/setup-go@v5
-      with:
-        go-version: '1.23'
-
-    - name: Set up Python
-      uses: actions/setup-python@v5
-      with:
-        python-version: '3.x'
-
-    - name: Install pre-commit
-      run: pip install pre-commit
-
-    - name: Run pre-commit
-      run: pre-commit run --all-files --show-diff-on-failure
+      - name: Verify no changes in clean test
+        run: |
+          if [ "${{ steps.test-clean.outputs.has-breaking-changes }}" != "false" ]; then
+            echo "Expected no breaking changes in clean test"
+            exit 1
+          fi
+          if [ "${{ steps.test-clean.outputs.breaking-count }}" != "0" ]; then
+            echo "Expected 0 breaking changes, got ${{ steps.test-clean.outputs.breaking-count }}"
+            exit 1
+          fi
+          if [ "${{ steps.test-clean.outputs.compatible-count }}" != "0" ]; then
+            echo "Expected 0 compatible changes, got ${{ steps.test-clean.outputs.compatible-count }}"
+            exit 1
+          fi

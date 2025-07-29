@@ -1,33 +1,19 @@
 package example
 
-import "fmt"
-
-// Greeter provides greeting functionality
+// Greeter handles greetings
 type Greeter struct {
 	Name string
 }
 
-// Greet returns a greeting message
+// Greet returns a greeting
 func (g *Greeter) Greet() string {
-	return fmt.Sprintf("Hello, %s!", g.Name)
+	return "Hello, " + g.Name
 }
 
-// Add adds two integers
-func Add(a, b int) int {
-	return a + b
+// Process handles data processing
+func Process(data string) (string, error) {
+	return data, nil
 }
 
-// Config holds configuration
-type Config struct {
-	Host string
-	Port int
-}
-
-// Status represents service status
-type Status int
-
-const (
-	StatusUnknown Status = iota
-	StatusReady
-	StatusError
-)
+// MaxRetries is the maximum number of retries
+const MaxRetries = 3
