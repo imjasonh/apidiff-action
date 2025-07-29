@@ -29,10 +29,10 @@ The arguments can be either:
 Both arguments must be the same type (both git refs or both directories).`,
 		Example: `  # Compare git branches
   goapidiff main feature-branch
-  
+
   # Compare git tags
   goapidiff v1.0.0 v2.0.0
-  
+
   # Compare directories
   goapidiff old-version/ new-version/`,
 		Args: cobra.ExactArgs(2),

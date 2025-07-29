@@ -132,8 +132,8 @@ Great for posting as PR comments:
 ```markdown
 # API Changes Report
 
-**Old:** `v1.0.0`  
-**New:** `v2.0.0`  
+**Old:** `v1.0.0`
+**New:** `v2.0.0`
 
 ## Summary
 
@@ -173,5 +173,3 @@ Add to your GitHub Actions workflow:
 ## Credits
 
 This tool is built on top of [`golang.org/x/exp/apidiff`](https://pkg.go.dev/golang.org/x/exp/apidiff), which provides the core API analysis functionality. All the smart API compatibility checking is done by that excellent package.
-
-
