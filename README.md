@@ -86,6 +86,8 @@ The action will comment on your PR with a formatted report:
 > - WithTimeout: added
 > - DefaultTimeout: added
 
+Example in action: https://github.com/imjasonh/apidiff-action/pull/3
+
 ## Advanced Usage
 
 ### Continue on breaking changes
