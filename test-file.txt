@@ -1,0 +1,4 @@
+This file is added to demonstrate the PR comment feature of apidiff-action.
+
+When this PR is opened, the test-pr-comment job will run and create a comment
+showing the API changes detected in the testdata/break example.

@@ -8,6 +8,7 @@ on:
 
 permissions:
   contents: read
+  pull-requests: write  # Required for PR comments
 
 jobs:
   pre-commit:
@@ -132,3 +133,34 @@ jobs:
             echo "Expected 0 compatible changes, got ${{ steps.test-clean.outputs.compatible-count }}"
             exit 1
           fi
+
+  # Test PR comment functionality (only on PRs)
+  test-pr-comment:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: 'stable'
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Build action
+        run: |
+          npm ci
+          npm run build
+
+      # Test with breaking changes and PR comment enabled
+      - name: Test PR comment with breaking changes
+        uses: ./
+        with:
+          working-directory: testdata/break
+          fail-on-breaking: false
+          comment-on-pr: true
+        env:
+          INPUT_OLD: old
+          INPUT_NEW: new
