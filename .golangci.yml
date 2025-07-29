@@ -14,7 +14,7 @@ linters:
     - gocyclo
     - gofmt
     - goimports
-    - gomnd
+    - mnd
     - goprintffuncname
     - gosec
     - gosimple
@@ -64,12 +64,17 @@ linters-settings:
     min-complexity: 15
   goimports:
     local-prefixes: github.com/imjasonh/goapidiff
-  gomnd:
-    settings:
-      mnd:
-        checks: argument,case,condition,operation,return,assign
+  mnd:
+    checks:
+      - argument
+      - case
+      - condition
+      - operation
+      - return
+      - assign
   govet:
-    check-shadowing: true
+    enable:
+      - shadow
   lll:
     line-length: 140
   misspell:
@@ -83,20 +88,18 @@ linters-settings:
     confidence: 0
 
 issues:
+  exclude-dirs:
+    - testdata
   exclude-rules:
     - path: _test\.go
       linters:
-        - gomnd
+        - mnd
         - funlen
         - dupl
 
     - path: testdata/
       linters:
-        - gomnd
+        - mnd
         - funlen
         - goconst
         - errcheck
-
-run:
-  skip-dirs:
-    - testdata
