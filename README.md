@@ -174,3 +174,4 @@ Add to your GitHub Actions workflow:
 
 This tool is built on top of [`golang.org/x/exp/apidiff`](https://pkg.go.dev/golang.org/x/exp/apidiff), which provides the core API analysis functionality. All the smart API compatibility checking is done by that excellent package.
 
+
