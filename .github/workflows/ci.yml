@@ -2,25 +2,133 @@ name: CI
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
+    branches: [main]
 
 permissions:
   contents: read
-
 
 jobs:
   pre-commit:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
-    - uses: actions/setup-python@v3
-    - uses: actions/setup-go@v5
-      with:
-        go-version: stable
-    - name: Install Go tools
-      run: |
-        go install golang.org/x/tools/cmd/goimports@latest
-        go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.61.0
-    - uses: pre-commit/action@v3.0.1
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - uses: pre-commit/action@v3.0.1
+
+  # Test the action itself
+  test-action:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: 'stable'
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      # Build the action
+      - name: Build action
+        run: |
+          npm ci
+          npm run build
+
+      # Test with breaking changes (should detect them)
+      - name: Test with breaking changes
+        uses: ./
+        id: test-breaking
+        with:
+          working-directory: testdata/break
+          fail-on-breaking: false
+          comment-on-pr: false
+        env:
+          INPUT_OLD: old
+          INPUT_NEW: new
+
+      - name: Verify breaking changes detected
+        run: |
+          if [ "${{ steps.test-breaking.outputs.has-breaking-changes }}" != "true" ]; then
+            echo "Expected breaking changes to be detected"
+            exit 1
+          fi
+          echo "Breaking changes detected: ${{ steps.test-breaking.outputs.breaking-count }}"
+          echo "Compatible changes: ${{ steps.test-breaking.outputs.compatible-count }}"
+
+          # Verify counts match what we expect
+          if [ "${{ steps.test-breaking.outputs.breaking-count }}" != "3" ]; then
+            echo "Expected 3 breaking changes, got ${{ steps.test-breaking.outputs.breaking-count }}"
+            exit 1
+          fi
+          if [ "${{ steps.test-breaking.outputs.compatible-count }}" != "1" ]; then
+            echo "Expected 1 compatible change, got ${{ steps.test-breaking.outputs.compatible-count }}"
+            exit 1
+          fi
+
+      # Test with safe changes (should not detect breaking changes)
+      - name: Test with safe changes
+        uses: ./
+        id: test-safe
+        with:
+          working-directory: testdata/safe
+          fail-on-breaking: true
+          comment-on-pr: false
+        env:
+          INPUT_OLD: old
+          INPUT_NEW: new
+
+      - name: Verify no breaking changes in safe test
+        run: |
+          if [ "${{ steps.test-safe.outputs.has-breaking-changes }}" != "false" ]; then
+            echo "Expected no breaking changes in safe test"
+            exit 1
+          fi
+          echo "Compatible changes: ${{ steps.test-safe.outputs.compatible-count }}"
+
+          # Verify count matches what we expect
+          if [ "${{ steps.test-safe.outputs.compatible-count }}" != "3" ]; then
+            echo "Expected 3 compatible changes, got ${{ steps.test-safe.outputs.compatible-count }}"
+            exit 1
+          fi
+
+      # Test with clean changes (no API changes)
+      - name: Test with clean changes
+        uses: ./
+        id: test-clean
+        with:
+          working-directory: testdata/clean
+          fail-on-breaking: true
+          comment-on-pr: false
+        env:
+          INPUT_OLD: old
+          INPUT_NEW: new
+
+      - name: Verify no changes in clean test
+        run: |
+          if [ "${{ steps.test-clean.outputs.has-breaking-changes }}" != "false" ]; then
+            echo "Expected no breaking changes in clean test"
+            exit 1
+          fi
+          if [ "${{ steps.test-clean.outputs.breaking-count }}" != "0" ]; then
+            echo "Expected 0 breaking changes, got ${{ steps.test-clean.outputs.breaking-count }}"
+            exit 1
+          fi
+          if [ "${{ steps.test-clean.outputs.compatible-count }}" != "0" ]; then
+            echo "Expected 0 compatible changes, got ${{ steps.test-clean.outputs.compatible-count }}"
+            exit 1
+          fi

@@ -1,45 +1,26 @@
 package example
 
-import "fmt"
+import "context"
 
-// Greeter provides greeting functionality
+// Greeter handles greetings
 type Greeter struct {
 	Name     string
-	Language string // Added field - compatible change
+	Language string // Added field (safe)
 }
 
-// Greet returns a greeting message
+// Greet returns a greeting
 // Breaking change: added parameter
 func (g *Greeter) Greet(formal bool) string {
 	if formal {
-		return fmt.Sprintf("Good day, %s!", g.Name)
+		return "Greetings, " + g.Name
 	}
-	return fmt.Sprintf("Hello, %s!", g.Name)
+	return "Hello, " + g.Name
 }
 
-// Add adds two integers
-func Add(a, b int) int {
-	return a + b
+// Process handles data processing
+// Breaking change: added context parameter
+func Process(ctx context.Context, data string) (string, error) {
+	return data, nil
 }
 
-// Multiply multiplies two integers (new function - compatible)
-func Multiply(a, b int) int {
-	return a * b
-}
-
-// Config holds configuration
-type Config struct {
-	Host    string
-	Port    int
-	Timeout int // Added field - compatible change
-}
-
-// Status represents service status
-type Status int
-
-const (
-	StatusUnknown Status = iota
-	StatusReady
-	StatusError
-	StatusStarting // Added constant - compatible change
-)
+// MaxRetries was removed (breaking change)

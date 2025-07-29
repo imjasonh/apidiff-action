@@ -1,22 +1,15 @@
-# Binaries for programs and plugins
-*.exe
-*.exe~
-*.dll
-*.so
-*.dylib
+# Node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
 
-# Test binary, built with `go test -c`
-*.test
+# Build output
+dist/
 
-# Output of the go coverage tool
-*.out
-coverage.txt
-
-# Dependency directories
-vendor/
-
-# Go workspace file
-go.work
+# Test coverage
+coverage/
+*.lcov
 
 # IDE files
 .idea/
@@ -29,9 +22,9 @@ go.work
 .DS_Store
 Thumbs.db
 
-# Build output
-/goapidiff
-dist/
+# Environment
+.env
+.env.local
 
 # pre-commit
 .pre-commit-config.yaml.lock

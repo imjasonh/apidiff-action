@@ -6,18 +6,33 @@ repos:
       - id: end-of-file-fixer
       - id: check-yaml
       - id: check-added-large-files
+      - id: check-json
+      - id: pretty-format-json
+        args: ['--autofix']
 
-  - repo: https://github.com/dnephin/pre-commit-golang
-    rev: v0.5.1
+  - repo: https://github.com/pre-commit/mirrors-prettier
+    rev: v3.1.0
     hooks:
-      - id: go-fmt
-      - id: go-vet
-      - id: go-imports
-      - id: go-mod-tidy
-      - id: go-unit-tests
-      - id: go-build
+      - id: prettier
 
-  - repo: https://github.com/golangci/golangci-lint
-    rev: v2.3.0
+  - repo: https://github.com/pre-commit/mirrors-eslint
+    rev: v8.56.0
     hooks:
-      - id: golangci-lint
+      - id: eslint
+        files: \.js$
+        args: ['--fix']
+
+  - repo: local
+    hooks:
+      - id: build-dist
+        name: Build dist
+        entry: npm run build
+        language: system
+        pass_filenames: false
+        files: ^(index\.js|lib/.*\.js)$
+      - id: check-dist
+        name: Check dist is up to date
+        entry: bash -c 'if [ -n "$(git status --porcelain dist)" ]; then echo "dist is out of date. Run npm run build and commit the changes."; exit 1; fi'
+        language: system
+        pass_filenames: false
+        always_run: true

@@ -1,0 +1,36 @@
+name: 'Go API Compatibility Check'
+description: 'Detect breaking API changes in Go code and comment on PRs'
+author: 'Jason Hall'
+branding:
+  icon: 'shield'
+  color: 'blue'
+
+inputs:
+  working-directory:
+    description: 'Directory to run apidiff in'
+    required: false
+    default: '.'
+  fail-on-breaking:
+    description: 'Whether to fail the action if breaking changes are detected'
+    required: false
+    default: 'true'
+  comment-on-pr:
+    description: 'Whether to comment on the PR with results'
+    required: false
+    default: 'true'
+  token:
+    description: 'GitHub token for commenting on PRs'
+    required: false
+    default: ${{ github.token }}
+
+outputs:
+  has-breaking-changes:
+    description: 'Whether breaking changes were detected'
+  breaking-count:
+    description: 'Number of breaking changes found'
+  compatible-count:
+    description: 'Number of compatible changes found'
+
+runs:
+  using: 'node20'
+  main: 'dist/index.js'
