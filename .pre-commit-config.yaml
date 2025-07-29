@@ -16,3 +16,8 @@ repos:
       - id: go-mod-tidy
       - id: go-unit-tests
       - id: go-build
+
+  - repo: https://github.com/golangci/golangci-lint
+    rev: v2.3.0
+    hooks:
+      - id: golangci-lint
