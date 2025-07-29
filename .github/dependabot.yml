@@ -1,36 +1,36 @@
 version: 2
 updates:
   # Enable version updates for npm
-  - package-ecosystem: "npm"
-    directory: "/"
+  - package-ecosystem: 'npm'
+    directory: '/'
     schedule:
-      interval: "weekly"
-      day: "monday"
+      interval: 'weekly'
+      day: 'monday'
     open-pull-requests-limit: 5
     groups:
       production-dependencies:
         applies-to: version-updates
-        dependency-type: "production"
+        dependency-type: 'production'
       development-dependencies:
         applies-to: version-updates
-        dependency-type: "development"
+        dependency-type: 'development'
         patterns:
-          - "@types/*"
-          - "eslint*"
-          - "prettier*"
-          - "jest*"
-          - "husky"
-          - "lint-staged"
-          - "@vercel/ncc"
+          - '@types/*'
+          - 'eslint*'
+          - 'prettier*'
+          - 'jest*'
+          - 'husky'
+          - 'lint-staged'
+          - '@vercel/ncc'
 
   # Enable version updates for GitHub Actions
-  - package-ecosystem: "github-actions"
-    directory: "/"
+  - package-ecosystem: 'github-actions'
+    directory: '/'
     schedule:
-      interval: "weekly"
-      day: "monday"
+      interval: 'weekly'
+      day: 'monday'
     open-pull-requests-limit: 5
     groups:
       github-actions:
         patterns:
-          - "*"
+          - '*'
