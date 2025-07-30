@@ -1,25 +1,30 @@
 #!/bin/bash
 # Pre-commit script to build dist with Node 20
 
-# Source nvm
+# Check if we're already on Node 20
+node_version=$(node --version)
+if [[ "$node_version" =~ ^v20\. ]]; then
+  # Already on Node 20, just build
+  npm run build
+  exit 0
+fi
+
+# Try to use nvm if available
 export NVM_DIR="$HOME/.nvm"
 if [ -s "$NVM_DIR/nvm.sh" ]; then
   . "$NVM_DIR/nvm.sh"
-else
-  echo "Error: nvm not found at $NVM_DIR/nvm.sh"
-  exit 1
+  nvm install 20.9.0 >/dev/null 2>&1
+  nvm use 20.9.0 >/dev/null 2>&1
+
+  # Verify we switched to Node 20
+  node_version=$(node --version)
+  if [[ "$node_version" =~ ^v20\. ]]; then
+    npm run build
+    exit 0
+  fi
 fi
 
-# Install and use Node 20
-nvm install 20.9.0 >/dev/null 2>&1
-nvm use 20.9.0 >/dev/null 2>&1
-
-# Verify Node version
-node_version=$(node --version)
-if [[ ! "$node_version" =~ ^v20\. ]]; then
-  echo "Error: Failed to switch to Node 20 (current: $node_version)"
-  exit 1
-fi
-
-# Build dist
-npm run build
+# If we're not on Node 20 and can't switch, error out
+echo "Error: Node.js v20 is required (found $node_version)"
+echo "Please install Node 20 or use nvm to switch versions"
+exit 1

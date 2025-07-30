@@ -1,12 +1,12 @@
 #!/bin/bash
 # Pre-commit script to check if dist is up to date
 
-# Source nvm
+# Try to use Node 20 via nvm if available
 export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-
-# Use Node 20
-nvm use 20.9.0 >/dev/null 2>&1
+if [ -s "$NVM_DIR/nvm.sh" ]; then
+  . "$NVM_DIR/nvm.sh"
+  nvm use 20.9.0 >/dev/null 2>&1
+fi
 
 # Check if dist has uncommitted changes
 if [ -n "$(git status --porcelain dist)" ]; then
