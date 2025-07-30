@@ -89,17 +89,26 @@ The action uses `@vercel/ncc` to compile all dependencies into a single `dist/in
 To build and commit dist after making changes:
 
 ```bash
-# Ensure you're using Node v20 (use nvm if installed)
+# Method 1: Use the helper script
+./scripts/use-node-20.sh  # Switches to Node 20
+npm run build
+git add dist/index.js
+git commit -m "Rebuild dist"
+
+# Method 2: Manual with nvm
 nvm use  # Reads .nvmrc and switches to Node 20.9.0
 node --version  # Should show v20.x.x
-
-# Build and commit
 npm run build
 git add dist/index.js
 git commit -m "Rebuild dist"
 ```
 
-The pre-commit hooks will ensure dist is up to date before allowing commits.
+**Important**: The pre-commit hooks will:
+1. Verify you're using Node 20 before building dist
+2. Automatically rebuild dist when source files change
+3. Prevent commits if dist is out of date
+
+If you get an error about Node version, switch to Node 20 using `nvm use` or `./scripts/use-node-20.sh`.
 
 ### Pre-commit Hooks
 

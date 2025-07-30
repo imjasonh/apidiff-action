@@ -32,7 +32,7 @@ repos:
     hooks:
       - id: build-dist
         name: Build dist
-        entry: npm run build
+        entry: bash -c 'node_version=$(node --version); if [[ ! "$node_version" =~ ^v20\. ]]; then echo "Error - Node.js v20 is required (found $node_version). Use nvm to switch to Node 20."; exit 1; fi; npm run build'
         language: system
         pass_filenames: false
         files: ^(index\.js|lib/.*\.js)$
