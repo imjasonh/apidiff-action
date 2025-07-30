@@ -84,17 +84,17 @@ Each test case has `old/` and `new/` subdirectories with Go code.
 
 The action uses `@vercel/ncc` to compile all dependencies into a single `dist/index.js` file. This is required for GitHub Actions and must be committed to the repository. The dist/ folder is intentionally NOT in .gitignore.
 
-**Important**: Build with Node.js v20 to ensure consistent output with CI.
+**Important**: The dist must be built with Node.js v20 to match GitHub Actions runtime.
 
-To update dist/ after making changes:
+There are two ways to update dist/:
 
-```bash
-# Ensure you're using Node v20
-node --version  # Should show v20.x.x
-
-npm run build
-git add dist/index.js
-```
+1. **Automatic (recommended)**: Push changes to main branch and the build-dist workflow will automatically rebuild with Node 20
+2. **Manual**: If you have Node 20 installed locally:
+   ```bash
+   node --version  # Must show v20.x.x
+   npm run build
+   git add dist/index.js
+   ```
 
 ### Pre-commit Hooks
 

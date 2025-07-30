@@ -28,18 +28,17 @@ repos:
         args: ['--fix']
         exclude: ^dist/
 
-  # Disabled local hooks because dist/ formatting can vary between Node versions
-  # - repo: local
-  #   hooks:
-  #     - id: build-dist
-  #       name: Build dist
-  #       entry: npm run build
-  #       language: system
-  #       pass_filenames: false
-  #       files: ^(index\.js|lib/.*\.js)$
-  #     - id: check-dist
-  #       name: Check dist is up to date
-  #       entry: bash -c 'if [ -n "$(git status --porcelain dist)" ]; then echo "dist is out of date. Run npm run build and commit the changes."; exit 1; fi'
-  #       language: system
-  #       pass_filenames: false
-  #       always_run: true
+  - repo: local
+    hooks:
+      - id: build-dist
+        name: Build dist
+        entry: npm run build
+        language: system
+        pass_filenames: false
+        files: ^(index\.js|lib/.*\.js)$
+      - id: check-dist
+        name: Check dist is up to date
+        entry: bash -c 'if [ -n "$(git status --porcelain dist)" ]; then echo "dist is out of date. Run npm run build and commit the changes."; exit 1; fi'
+        language: system
+        pass_filenames: false
+        always_run: true
