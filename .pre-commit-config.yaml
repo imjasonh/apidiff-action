@@ -42,5 +42,3 @@ repos:
         language: system
         pass_filenames: false
         always_run: true
-        # Temporarily skip while we're adding dist/ to the repo
-        stages: [manual]
