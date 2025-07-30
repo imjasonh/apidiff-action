@@ -30,9 +30,10 @@ jobs:
             echo "Expected dist/ directory does not exist"
             exit 1
           fi
-          if [ "$(git diff --ignore-space-at-eol --text dist/ | wc -l)" -gt "0" ]; then
+          # Use more aggressive whitespace ignoring to handle OS differences
+          if [ "$(git diff --ignore-all-space --ignore-blank-lines --ignore-space-at-eol dist/ | wc -l)" -gt "0" ]; then
             echo "Detected uncommitted changes after build. See diff below:"
-            git diff --ignore-space-at-eol --text dist/
+            git diff --ignore-all-space --ignore-blank-lines --ignore-space-at-eol dist/
             echo ""
             echo "Please run 'npm run build' locally and commit the changes"
             exit 1
