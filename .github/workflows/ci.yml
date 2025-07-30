@@ -56,7 +56,10 @@ jobs:
           git add dist/
           git commit -m "chore: update dist" --no-verify
           git push
-          exit 1  # Fail CI, to ensure the PR does not auto-merge
+          echo ""
+          echo "✅ Updated dist/ directory. The check-dist job will pass on the next CI run."
+          echo ""
+          exit 1  # Fail to prevent auto-merge of out-of-date dist
 
       # For PRs from forks, fail with instructions
       - name: Fail if dist is out of date (fork PR)
