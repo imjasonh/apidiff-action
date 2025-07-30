@@ -86,15 +86,20 @@ The action uses `@vercel/ncc` to compile all dependencies into a single `dist/in
 
 **Important**: The dist must be built with Node.js v20 to match GitHub Actions runtime.
 
-There are two ways to update dist/:
+To build and commit dist after making changes:
 
-1. **Automatic (recommended)**: Push changes to main branch and the build-dist workflow will automatically rebuild with Node 20
-2. **Manual**: If you have Node 20 installed locally:
-   ```bash
-   node --version  # Must show v20.x.x
-   npm run build
-   git add dist/index.js
-   ```
+```bash
+# Ensure you're using Node v20 (use nvm if installed)
+nvm use  # Reads .nvmrc and switches to Node 20.9.0
+node --version  # Should show v20.x.x
+
+# Build and commit
+npm run build
+git add dist/index.js
+git commit -m "Rebuild dist"
+```
+
+The pre-commit hooks will ensure dist is up to date before allowing commits.
 
 ### Pre-commit Hooks
 
