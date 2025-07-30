@@ -16,6 +16,9 @@
     "lint-staged": "^16.1.2",
     "prettier": "^3.1.1"
   },
+  "engines": {
+    "node": ">=20.0.0 <21.0.0"
+  },
   "jest": {
     "collectCoverage": true,
     "coverageThreshold": {
@@ -42,7 +45,7 @@
       "eslint --fix",
       "prettier --write"
     ],
-    "*.{json,md,yml}": [
+    "*.{json,yml}": [
       "prettier --write"
     ]
   },

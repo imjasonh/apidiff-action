@@ -5,7 +5,7 @@ yarn-debug.log*
 yarn-error.log*
 
 # Build output
-dist/
+# dist/ is intentionally committed for GitHub Actions
 
 # Test coverage
 coverage/
