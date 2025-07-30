@@ -32,13 +32,13 @@ repos:
     hooks:
       - id: build-dist
         name: Build dist
-        entry: bash -c 'node_version=$(node --version); if [[ ! "$node_version" =~ ^v20\. ]]; then echo "Error - Node.js v20 is required (found $node_version). Use nvm to switch to Node 20."; exit 1; fi; npm run build'
+        entry: ./scripts/pre-commit-build.sh
         language: system
         pass_filenames: false
         files: ^(index\.js|lib/.*\.js)$
       - id: check-dist
         name: Check dist is up to date
-        entry: bash -c 'if [ -n "$(git status --porcelain dist)" ]; then echo "dist is out of date. Run npm run build and commit the changes."; exit 1; fi'
+        entry: ./scripts/pre-commit-check-dist.sh
         language: system
         pass_filenames: false
         always_run: true
