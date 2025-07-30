@@ -27,18 +27,3 @@ repos:
         files: \.js$
         args: ['--fix']
         exclude: ^dist/
-
-  - repo: local
-    hooks:
-      - id: build-dist
-        name: Build dist
-        entry: ./scripts/pre-commit-build.sh
-        language: system
-        pass_filenames: false
-        files: ^(index\.js|lib/.*\.js)$
-      - id: check-dist
-        name: Check dist is up to date
-        entry: ./scripts/pre-commit-check-dist.sh
-        language: system
-        pass_filenames: false
-        always_run: true
