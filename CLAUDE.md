@@ -47,21 +47,18 @@ INPUT_OLD=HEAD~1 INPUT_NEW=HEAD node index.js
 ### Core Components
 
 1. **index.js** - Main entry point that:
-
    - Reads GitHub Action inputs
    - Determines which commits/directories to compare
    - Orchestrates the apidiff run, parsing, and PR commenting
    - Sets action outputs
 
 2. **lib/apidiff.js** - Handles running the official apidiff tool:
-
    - Installs `golang.org/x/exp/cmd/apidiff` if not present
    - Supports both git refs and directory comparisons
    - For directories: creates export files first, then compares them
    - For git refs: runs apidiff directly on the commits
 
 3. **lib/parser.js** - Parses apidiff text output:
-
    - Extracts breaking and compatible changes by package
    - Converts to structured format
    - Generates markdown reports for PR comments
@@ -83,7 +80,14 @@ Each test case has `old/` and `new/` subdirectories with Go code.
 
 ### Build Process
 
-The action uses `@vercel/ncc` to compile all dependencies into a single `dist/index.js` file. This is required for GitHub Actions and must be committed to the repository.
+The action uses `@vercel/ncc` to compile all dependencies into a single `dist/index.js` file. This is required for GitHub Actions and must be committed to the repository. The dist/ folder is intentionally NOT in .gitignore.
+
+To update dist/ after making changes:
+
+```bash
+npm run build
+git add dist/index.js
+```
 
 ### Pre-commit Hooks
 
