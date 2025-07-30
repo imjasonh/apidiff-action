@@ -12,6 +12,10 @@ This compiles all dependencies into `dist/index.js` which is what GitHub Actions
 
 **Important**: The dist folder must be committed to the repository for the action to work.
 
+### Automatic dist updates
+
+If you forget to rebuild dist, the `update-dist` workflow will automatically update it for you on pull requests.
+
 ## Node Version
 
 This project requires Node.js v20. We recommend using nvm to manage Node versions:
