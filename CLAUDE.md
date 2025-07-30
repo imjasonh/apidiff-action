@@ -10,6 +10,8 @@ This is a GitHub Action written in Node.js that detects breaking API changes in 
 
 ### Development
 
+**Important**: Use Node.js v20 to match GitHub Actions runtime.
+
 ```bash
 # Install dependencies
 npm ci
@@ -47,21 +49,18 @@ INPUT_OLD=HEAD~1 INPUT_NEW=HEAD node index.js
 ### Core Components
 
 1. **index.js** - Main entry point that:
-
    - Reads GitHub Action inputs
    - Determines which commits/directories to compare
    - Orchestrates the apidiff run, parsing, and PR commenting
    - Sets action outputs
 
 2. **lib/apidiff.js** - Handles running the official apidiff tool:
-
    - Installs `golang.org/x/exp/cmd/apidiff` if not present
    - Supports both git refs and directory comparisons
    - For directories: creates export files first, then compares them
    - For git refs: runs apidiff directly on the commits
 
 3. **lib/parser.js** - Parses apidiff text output:
-
    - Extracts breaking and compatible changes by package
    - Converts to structured format
    - Generates markdown reports for PR comments
@@ -83,7 +82,33 @@ Each test case has `old/` and `new/` subdirectories with Go code.
 
 ### Build Process
 
-The action uses `@vercel/ncc` to compile all dependencies into a single `dist/index.js` file. This is required for GitHub Actions and must be committed to the repository.
+The action uses `@vercel/ncc` to compile all dependencies into a single `dist/index.js` file. This is required for GitHub Actions and must be committed to the repository. The dist/ folder is intentionally NOT in .gitignore.
+
+**Important**: The dist must be built with Node.js v20 to match GitHub Actions runtime.
+
+To build and commit dist after making changes:
+
+```bash
+# Method 1: Use the helper script
+./scripts/use-node-20.sh  # Switches to Node 20
+npm run build
+git add dist/index.js
+git commit -m "Rebuild dist"
+
+# Method 2: Manual with nvm
+nvm use  # Reads .nvmrc and switches to Node 20.9.0
+node --version  # Should show v20.x.x
+npm run build
+git add dist/index.js
+git commit -m "Rebuild dist"
+```
+
+**Important**: The pre-commit hooks will:
+1. Verify you're using Node 20 before building dist
+2. Automatically rebuild dist when source files change
+3. Prevent commits if dist is out of date
+
+If you get an error about Node version, switch to Node 20 using `nvm use` or `./scripts/use-node-20.sh`.
 
 ### Pre-commit Hooks
 

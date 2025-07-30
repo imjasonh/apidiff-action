@@ -7,26 +7,85 @@ on:
     branches: [main]
 
 permissions:
-  contents: read
+  contents: write
+  pull-requests: write
 
 jobs:
+  check-dist:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # Use a token that can push for PR events from same repo
+          token: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && secrets.GITHUB_TOKEN || github.token }}
+          ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.ref || github.ref }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .node-version
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - id: check-changes
+        run: |
+          if [ -n "$(git status --porcelain dist/)" ]; then
+            echo "changes=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "changes=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      # For push events, just fail if out of date
+      - name: Fail if dist is out of date (push)
+        if: github.event_name == 'push' && steps.check-changes.outputs.changes == 'true'
+        run: |
+          echo "Detected uncommitted changes after build. See diff below:"
+          git diff --ignore-space-at-eol --text dist/
+          echo ""
+          echo "Please run 'npm run build' locally and commit the changes."
+          exit 1
+
+      # For PRs from same repo, update automatically
+      - name: Update dist (PR)
+        if: |
+          github.event_name == 'pull_request' &&
+          steps.check-changes.outputs.changes == 'true' &&
+          github.event.pull_request.head.repo.full_name == github.repository
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add dist/
+          git commit -m "chore: update dist" --no-verify
+          git push
+          echo ""
+          echo "✅ Updated dist/ directory. The check-dist job will pass on the next CI run."
+          echo ""
+          exit 1  # Fail to prevent auto-merge of out-of-date dist
+
+      # For PRs from forks, fail with instructions
+      - name: Fail if dist is out of date (fork PR)
+        if: |
+          github.event_name == 'pull_request' &&
+          steps.check-changes.outputs.changes == 'true' &&
+          github.event.pull_request.head.repo.full_name != github.repository
+        run: |
+          echo "Detected uncommitted changes after build. See diff below:"
+          git diff --ignore-space-at-eol --text dist/
+          echo ""
+          echo "This PR is from a fork. Please run 'npm run build' locally and commit the changes."
+          exit 1
+
   pre-commit:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
       - uses: actions/setup-python@v5
         with:
           python-version: '3.x'
-
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
           cache: 'npm'
-
-      - name: Install dependencies
-        run: npm ci
-
+      - run: npm ci
       - uses: pre-commit/action@v3.0.1
 
   # Test the action itself
@@ -34,18 +93,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
       - uses: actions/setup-go@v5
         with:
           go-version: 'stable'
-
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
-
-      # Build the action
-      - name: Build action
-        run: |
+      - run: |
           npm ci
           npm run build
 
