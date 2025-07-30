@@ -10,6 +10,8 @@ This is a GitHub Action written in Node.js that detects breaking API changes in 
 
 ### Development
 
+**Important**: Use Node.js v20 to match GitHub Actions runtime.
+
 ```bash
 # Install dependencies
 npm ci
@@ -82,9 +84,14 @@ Each test case has `old/` and `new/` subdirectories with Go code.
 
 The action uses `@vercel/ncc` to compile all dependencies into a single `dist/index.js` file. This is required for GitHub Actions and must be committed to the repository. The dist/ folder is intentionally NOT in .gitignore.
 
+**Important**: Build with Node.js v20 to ensure consistent output with CI.
+
 To update dist/ after making changes:
 
 ```bash
+# Ensure you're using Node v20
+node --version  # Should show v20.x.x
+
 npm run build
 git add dist/index.js
 ```
