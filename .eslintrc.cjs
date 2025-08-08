@@ -1,13 +1,15 @@
 module.exports = {
+  root: true,
+  ignorePatterns: ['dist/**', 'node_modules/**', 'coverage/**'],
   env: {
     node: true,
-    es2021: true,
     jest: true,
+    es2021: true,
   },
   extends: ['eslint:recommended', 'prettier'],
   parserOptions: {
-    ecmaVersion: 12,
-    sourceType: 'module',
+    ecmaVersion: 2021,
+    sourceType: 'script',
   },
   rules: {
     'no-console': 'off',
