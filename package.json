@@ -7,29 +7,15 @@
   },
   "description": "GitHub Action for detecting breaking API changes in Go code",
   "devDependencies": {
-    "@types/jest": "^30.0.0",
     "@vercel/ncc": "^0.38.1",
     "eslint": "^9.32.0",
     "eslint-config-prettier": "^10.1.8",
     "husky": "^9.1.7",
-    "jest": "^30.0.5",
     "lint-staged": "^16.1.4",
     "prettier": "^3.1.1"
   },
   "engines": {
     "node": ">=20.0.0 <21.0.0"
-  },
-  "jest": {
-    "collectCoverage": true,
-    "coverageThreshold": {
-      "global": {
-        "branches": 80,
-        "functions": 80,
-        "lines": 80,
-        "statements": 80
-      }
-    },
-    "testEnvironment": "node"
   },
   "keywords": [
     "github-action",
@@ -56,7 +42,7 @@
     "format": "prettier --write .",
     "lint": "eslint .",
     "prepare": "husky install",
-    "test": "jest"
+    "test": "node --test"
   },
   "version": "1.0.0"
 }

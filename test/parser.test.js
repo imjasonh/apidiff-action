@@ -1,12 +1,14 @@
+const { describe, test } = require('node:test');
+const assert = require('node:assert/strict');
 const { parseApidiffOutput, formatChangesAsMarkdown } = require('../lib/parser');
 
 describe('parseApidiffOutput', () => {
   test('parses empty output', () => {
     const result = parseApidiffOutput('');
-    expect(result.hasBreakingChanges).toBe(false);
-    expect(result.breakingCount).toBe(0);
-    expect(result.compatibleCount).toBe(0);
-    expect(result.packages).toEqual([]);
+    assert.strictEqual(result.hasBreakingChanges, false);
+    assert.strictEqual(result.breakingCount, 0);
+    assert.strictEqual(result.compatibleCount, 0);
+    assert.deepStrictEqual(result.packages, []);
   });
 
   test('parses output with no changes', () => {
@@ -14,69 +16,55 @@ describe('parseApidiffOutput', () => {
     const output = '';
 
     const result = parseApidiffOutput(output);
-    expect(result.hasBreakingChanges).toBe(false);
-    expect(result.breakingCount).toBe(0);
-    expect(result.compatibleCount).toBe(0);
-    expect(result.packages).toEqual([]);
+    assert.strictEqual(result.hasBreakingChanges, false);
+    assert.strictEqual(result.breakingCount, 0);
+    assert.strictEqual(result.compatibleCount, 0);
+    assert.deepStrictEqual(result.packages, []);
   });
 
   test('parses output with breaking changes only', () => {
-    const output = `Incompatible changes:
-- (*Client).DoSomething: changed from func(string) error to func(context.Context, string) error
-- MaxRetries: removed`;
+    const output = `Incompatible changes:\n- (*Client).DoSomething: changed from func(string) error to func(context.Context, string) error\n- MaxRetries: removed`;
 
     const result = parseApidiffOutput(output);
-    expect(result.hasBreakingChanges).toBe(true);
-    expect(result.breakingCount).toBe(2);
-    expect(result.compatibleCount).toBe(0);
-    expect(result.packages).toHaveLength(1);
-    expect(result.packages[0].name).toBe('default');
-    expect(result.packages[0].breaking).toHaveLength(2);
-    expect(result.packages[0].compatible).toHaveLength(0);
+    assert.strictEqual(result.hasBreakingChanges, true);
+    assert.strictEqual(result.breakingCount, 2);
+    assert.strictEqual(result.compatibleCount, 0);
+    assert.strictEqual(result.packages.length, 1);
+    assert.strictEqual(result.packages[0].name, 'default');
+    assert.strictEqual(result.packages[0].breaking.length, 2);
+    assert.strictEqual(result.packages[0].compatible.length, 0);
   });
 
   test('parses output with compatible changes only', () => {
-    const output = `Compatible changes:
-- NewOption: added
-- WithTimeout: added
-- DefaultTimeout: added`;
+    const output = `Compatible changes:\n- NewOption: added\n- WithTimeout: added\n- DefaultTimeout: added`;
 
     const result = parseApidiffOutput(output);
-    expect(result.hasBreakingChanges).toBe(false);
-    expect(result.breakingCount).toBe(0);
-    expect(result.compatibleCount).toBe(3);
-    expect(result.packages).toHaveLength(1);
-    expect(result.packages[0].compatible).toHaveLength(3);
+    assert.strictEqual(result.hasBreakingChanges, false);
+    assert.strictEqual(result.breakingCount, 0);
+    assert.strictEqual(result.compatibleCount, 3);
+    assert.strictEqual(result.packages.length, 1);
+    assert.strictEqual(result.packages[0].compatible.length, 3);
   });
 
   test('parses output with both breaking and compatible changes', () => {
-    const output = `Incompatible changes:
-- (*Client).DoSomething: changed from func(string) error to func(context.Context, string) error
-Compatible changes:
-- NewOption: added
-- WithTimeout: added`;
+    const output = `Incompatible changes:\n- (*Client).DoSomething: changed from func(string) error to func(context.Context, string) error\nCompatible changes:\n- NewOption: added\n- WithTimeout: added`;
 
     const result = parseApidiffOutput(output);
-    expect(result.hasBreakingChanges).toBe(true);
-    expect(result.breakingCount).toBe(1);
-    expect(result.compatibleCount).toBe(2);
-    expect(result.packages).toHaveLength(1);
-    expect(result.packages[0].breaking).toHaveLength(1);
-    expect(result.packages[0].compatible).toHaveLength(2);
+    assert.strictEqual(result.hasBreakingChanges, true);
+    assert.strictEqual(result.breakingCount, 1);
+    assert.strictEqual(result.compatibleCount, 2);
+    assert.strictEqual(result.packages.length, 1);
+    assert.strictEqual(result.packages[0].breaking.length, 1);
+    assert.strictEqual(result.packages[0].compatible.length, 2);
   });
 
   test('parses real apidiff output', () => {
-    const output = `Incompatible changes:
-- (*Greeter).Greet: changed from func() string to func(bool) string
-- MaxRetries: removed
-- Process: changed from func(string) (string, error) to func(context.Context, string) (string, error)
-Compatible changes:
-- Greeter.Language: added`;
+    const output = `Incompatible changes:\n- (*Greeter).Greet: changed from func() string to func(bool) string\n- MaxRetries: removed\n- Process: changed from func(string) (string, error) to func(context.Context, string) (string, error)\nCompatible changes:\n- Greeter.Language: added`;
 
     const result = parseApidiffOutput(output);
-    expect(result.hasBreakingChanges).toBe(true);
-    expect(result.breakingCount).toBe(3);
-    expect(result.compatibleCount).toBe(1);
+    assert.strictEqual(result.hasBreakingChanges, true);
+    assert.strictEqual(result.breakingCount, 3);
+    assert.strictEqual(result.compatibleCount, 1);
   });
 });
 
@@ -90,7 +78,7 @@ describe('formatChangesAsMarkdown', () => {
     };
 
     const markdown = formatChangesAsMarkdown(parsedChanges);
-    expect(markdown).toContain('No API changes detected');
+    assert.ok(markdown.includes('No API changes detected'));
   });
 
   test('formats breaking changes', () => {
@@ -108,11 +96,11 @@ describe('formatChangesAsMarkdown', () => {
     };
 
     const markdown = formatChangesAsMarkdown(parsedChanges);
-    expect(markdown).toContain('Breaking changes | 1');
-    expect(markdown).toContain('⚠️ **This PR contains breaking API changes!**');
-    expect(markdown).toContain('❌ Breaking changes');
-    expect(markdown).toContain('- Foo: removed');
-    expect(markdown).not.toContain('`default`'); // Should not show default package name
+    assert.ok(markdown.includes('Breaking changes | 1'));
+    assert.ok(markdown.includes('⚠️ **This PR contains breaking API changes!**'));
+    assert.ok(markdown.includes('❌ Breaking changes'));
+    assert.ok(markdown.includes('- Foo: removed'));
+    assert.ok(!markdown.includes('`default`'));
   });
 
   test('formats compatible changes', () => {
@@ -133,9 +121,9 @@ describe('formatChangesAsMarkdown', () => {
     };
 
     const markdown = formatChangesAsMarkdown(parsedChanges);
-    expect(markdown).toContain('Compatible changes | 2');
-    expect(markdown).toContain('✅ Compatible changes');
-    expect(markdown).toContain('- Bar: added');
-    expect(markdown).toContain('- Baz: added');
+    assert.ok(markdown.includes('Compatible changes | 2'));
+    assert.ok(markdown.includes('✅ Compatible changes'));
+    assert.ok(markdown.includes('- Bar: added'));
+    assert.ok(markdown.includes('- Baz: added'));
   });
 });
