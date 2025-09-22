@@ -7,8 +7,8 @@
   },
   "description": "GitHub Action for detecting breaking API changes in Go code",
   "devDependencies": {
-    "@vercel/ncc": "^0.38.1",
-    "eslint": "^9.35.0",
+    "@vercel/ncc": "^0.38.4",
+    "eslint": "^9.36.0",
     "eslint-config-prettier": "^10.1.8",
     "husky": "^9.1.7",
     "lint-staged": "^16.1.6",
