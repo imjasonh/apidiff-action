@@ -20,7 +20,7 @@ jobs:
           token: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && secrets.GITHUB_TOKEN || github.token }}
           ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.ref || github.ref }}
 
-      - uses: actions/setup-node@v5
+      - uses: actions/setup-node@v6
         with:
           node-version-file: .node-version
           cache: npm
@@ -81,7 +81,7 @@ jobs:
       - uses: actions/setup-python@v6
         with:
           python-version: '3.x'
-      - uses: actions/setup-node@v5
+      - uses: actions/setup-node@v6
         with:
           node-version: '20'
           cache: 'npm'
@@ -96,7 +96,7 @@ jobs:
       - uses: actions/setup-go@v6
         with:
           go-version: 'stable'
-      - uses: actions/setup-node@v5
+      - uses: actions/setup-node@v6
         with:
           node-version: '20'
       - run: |
