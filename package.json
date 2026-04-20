@@ -8,11 +8,11 @@
   "description": "GitHub Action for detecting breaking API changes in Go code",
   "devDependencies": {
     "@vercel/ncc": "^0.38.4",
-    "eslint": "^10.2.0",
+    "eslint": "^10.2.1",
     "eslint-config-prettier": "^10.1.8",
     "husky": "^9.1.7",
     "lint-staged": "^16.4.0",
-    "prettier": "^3.8.2"
+    "prettier": "^3.8.3"
   },
   "engines": {
     "node": ">=20.0.0 <21.0.0"
